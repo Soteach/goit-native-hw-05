@@ -6,62 +6,102 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { useState, useEffect } from 'react';
 
 import { Camera } from 'expo-camera';
+import * as Location from 'expo-location';
 
-export default function CreatePostsScreen() {
+export default function CreatePostsScreen({ navigation }) {
+  const [camera, setCamera] = useState(null);
+  const [photo, setPhoto] = useState('');
+  const [isShowKeyboard, setisShowKeyboard] = useState(false);
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
+
+  const takePhoto = async () => {
+    const photo = await camera.takePictureAsync();
+    const location = await Location.getCurrentPositionAsync();
+    // console.log('Latitude----->', location.coords.latitude);
+    // console.log('Longitude----->', location.coords.longitude);
+    // console.log('camera--->', photo.uri);
+    setPhoto(photo.uri);
+  };
+
+  const keyboardHide = () => {
+    setisShowKeyboard(false);
+    Keyboard.dismiss();
+    console.log('title:', title, 'location:', location);
+    clearForm();
+  };
+
+  const clearForm = () => {
+    setEmail('');
+    setPassword('');
+  };
+
+  const sendPhoto = () => {
+    console.log('navigation-->', navigation);
+    navigation.navigate('Home', { photo });
+  };
+
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     console.log('status---->', status);
+  //     if (status !== 'granted') {
+  //       setErrorMsg('Permission to access location was denied');
+  //       return;
+  //     }
+  //   })();
+  // }, []);
+
   return (
-    <Camera style={styles.camera}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image
-            style={styles.arrowBack}
-            source={require('../../assets/icons/arrow-left.png')}
-          />
-          <Text style={styles.title}>Створити публікацию</Text>
-        </View>
-        <View style={styles.addForm}>
-          <View style={styles.imageWrap}>
-            <View style={styles.imageTemplate}>
-              <View style={styles.iconCircle}>
-                <Image
-                  // style={styles.camera}
-                  source={require('../../assets/icons/camera.png')}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={styles.inputWrap}>
-            <Text style={styles.addText}>Завантажте фото</Text>
-            <TouchableOpacity onPress={() => {}}>
-              <Text style={{ color: 'fff' }}>Click!</Text>
-            </TouchableOpacity>
-            <TextInput style={styles.inputName} placeholder="Назва..." />
-            <View style={styles.locationWrap}>
-              <TextInput
-                style={styles.inputLocation}
-                placeholder="Місцевість..."
-              />
-              {/* <Image
-              style={styles.location}
-              source={require('./assets/icons/map-pin.png')}
-            /> */}
-            </View>
-          </View>
-          <View style={styles.btnWrap}>
-            <TouchableOpacity style={styles.btn}>
-              <Text style={styles.publText}>Опублікувати</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.deleteBtn}>
+    <View style={styles.container}>
+      <View style={styles.pictureContainer}>
+        <Camera style={styles.camera} ref={setCamera}>
+          {photo && (
+            <View style={styles.takePhotoContainer}>
               <Image
-                style={styles.delIcon}
-                source={require('../../assets/icons/trash-2.png')}
+                source={{ uri: photo }}
+                style={{ height: 190, width: 190 }}
               />
-            </TouchableOpacity>
-          </View>
-        </View>
+            </View>
+          )}
+          <TouchableOpacity style={styles.snapContainer} onPress={takePhoto}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../assets/icons/camera.png')} />
+            </View>
+          </TouchableOpacity>
+        </Camera>
       </View>
-    </Camera>
+      <View style={styles.inputWrap}>
+        <Text style={styles.addText}>Завантажте фото</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Додайте назву фото..."
+          placeholderTextColor={'#BDBDBD'}
+          onFocus={() => setisShowKeyboard(true)}
+          value={title}
+          onChangeText={value => {
+            setTitle(value);
+          }}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Додайте назву місцевості..."
+          placeholderTextColor={'#BDBDBD'}
+          onFocus={() => setisShowKeyboard(true)}
+          value={location}
+          onChangeText={value => {
+            setLocation(location);
+          }}
+        />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={sendPhoto}>
+        <Text style={styles.sendTitle}>Опублікувати</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -69,43 +109,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    position: 'relative',
   },
+
+  pictureContainer: {},
 
   camera: {
-    height: 300,
-  },
-
-  header: {
-    marginTop: 27,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomColor: '#000',
-    borderTopColor: 'transparent',
-    shadowOffset: {
-      width: 0,
-      height: 0.5,
-    },
-    shadowOpacity: 0.18,
-    shadowRadius: 0,
-    elevation: 1,
-    paddingBottom: 11,
-    marginBottom: 32,
-  },
-  arrowBack: {
-    width: 24,
-    height: 24,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '500',
-  },
-  addForm: {},
-  imageWrap: { alignItems: 'center' },
-  imageTemplate: {
+    // height: '50%',
+    // marginHorizontal: 12,
+    // marginTop: 30,
+    // justifyContent: 'flex-end',
+    // alignItems: 'center',
+    // borderRadius: 10,
+    // backgroundColor: '#212121',
+    // padding: 12,
     height: 240,
-    width: 375,
+    marginTop: 30,
+    width: '100%',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#E8E8E8',
@@ -114,65 +133,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 60 / 2,
+  snapContainer: {
+    backgroundColor: '#F6F6F6',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  camera: {
-    width: 24,
-    height: 24,
-  },
-  inputWrap: {
+    borderRadius: 100,
+    marginTop: 30,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    height: 51,
+    width: 60,
     marginHorizontal: 16,
   },
-  addText: {
-    fontSize: 16,
-    color: '#BDBDBD',
-    marginBottom: 48,
-  },
-  inputName: {
-    fontSize: 16,
-    color: '#BDBDBD',
-    marginBottom: 32,
-    height: 50,
-    borderBottomColor: '#E8E8E8',
-    borderBottomWidth: 1,
-  },
-  locationWrap: { flexDirection: 'row' },
-  location: {
-    width: 24,
-    height: 24,
-    fontSize: 16,
-    color: '#BDBDBD',
-  },
-  inputLocation: {
-    marginBottom: 32,
-    height: 50,
-    borderBottomColor: '#E8E8E8',
-    borderBottomWidth: 1,
-  },
-  btnWrap: { alignItems: 'center', justifyContent: 'flex-end' },
-  btn: {
-    width: 343,
-    height: 51,
-    borderRadius: 100,
-    backgroundColor: '#F6F6F6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 70,
-  },
-  publText: { color: '#BDBDBD', textAlign: 'center' },
-  deleteBtn: {
-    width: 70,
+
+  sendBtn: {
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 6,
+    width: 60,
     height: 40,
-    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  takePhotoContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    borderColor: '#ffffff',
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  button: {
     backgroundColor: '#F6F6F6',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 100,
+    marginTop: 50,
+    borderWidth: 1,
+    borderColor: 'transparent',
+
+    height: 51,
+    marginHorizontal: 16,
   },
-  delIcon: {},
+  sendTitle: {
+    color: 'orange',
+    fontSize: 16,
+  },
 });

@@ -23,7 +23,7 @@ export default function LoginScreen({ navigation }) {
   const keyboardHide = () => {
     setisShowKeyboard(false);
     Keyboard.dismiss();
-    console.log('email:', email, 'password:', password);
+    console.log('title:', email, 'password:', password);
     clearForm();
   };
 

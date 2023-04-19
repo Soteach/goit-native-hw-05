@@ -1,9 +1,30 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Button,
+} from 'react-native';
+import { useState, useEffect } from 'react';
 
-import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
+const Home = ({ route, navigation }) => {
+  // console.log('route.params---->', route.params);
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    if (route.params) {
+      setPosts(prevState => [...prevState, route.params]);
+    }
+  }, [route.params]);
 
-export default function Home() {
+  const sendComment = () => {
+    console.log('navigation send comment-->', navigation.navigate('name'));
+    // navigation.navigate('CommentsScreen');
+  };
+
+  // console.log('posts---->', posts);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -28,30 +49,63 @@ export default function Home() {
       <View style={styles.feed}>
         <View style={styles.post}>
           <View style={styles.imageWrap}>
-            <View style={styles.imageTemplate}></View>
+            <View style={styles.imageTemplate}>
+              <FlatList
+                data={posts}
+                keyExtractor={(item, indx) => indx.toString()}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      marginBottom: 10,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Image
+                      source={{ uri: item.photo }}
+                      style={{ width: 360, height: 240, borderRadius: 10 }}
+                    />
+                  </View>
+                )}
+              />
+            </View>
           </View>
           <Text style={styles.imageName}>Ліс</Text>
           <View style={styles.description}>
-            <View style={styles.comment}>
+            <TouchableOpacity
+              style={styles.comment}
+              onPress={() => {
+                navigation.navigate('Comments');
+              }}
+            >
               <Image
                 stype={styles.commentImg}
                 source={require('../../assets/icons/Shape.png')}
               />
               <Text style={styles.commentCounter}>0</Text>
-            </View>
+            </TouchableOpacity>
             <View style={styles.loc}>
-              <Image
-                style={styles.location}
-                source={require('../../assets/icons/map-pin.png')}
-              />
-              <Text style={styles.locationText}>Ivano-Frankivs'k, Ukraine</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Map');
+                }}
+              >
+                <Image
+                  style={styles.location}
+                  source={require('../../assets/icons/map-pin.png')}
+                />
+
+                <Text style={styles.locationText}>
+                  Ivano-Frankivs'k, Ukraine
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -61,6 +115,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
+    padding: 8,
     marginTop: 27,
     flexDirection: 'row',
     alignItems: 'center',
@@ -83,11 +138,10 @@ const styles = StyleSheet.create({
     height: 24,
   },
   title: {
-    // textAlign: 'center',
     fontSize: 17,
     fontWeight: '500',
   },
-  addForm: {},
+
   imageWrap: { alignItems: 'center' },
 
   iconCircle: {
@@ -165,7 +219,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: { marginRight: 8 },
-  userInfoWrap: {},
   name: {
     fontWeight: '700',
     fontSize: 13,
@@ -289,3 +342,5 @@ const styles = StyleSheet.create({
     height: 24,
   },
 });
+
+export default Home;

@@ -5,14 +5,10 @@ import {
   View,
   Image,
   TextInput,
-  Button,
   TouchableOpacity,
 } from 'react-native';
 
-import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import * as RegistrationScreen from './RegisterScreen';
-import { block } from 'react-native-reanimated';
 
 const loadApplication = async () => {
   await Font.loadAsync({

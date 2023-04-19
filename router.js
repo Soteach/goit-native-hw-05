@@ -14,9 +14,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import RegistrationScreen from './screens/auth/RegisterScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
-import Home from './screens/auth/Home';
+import Home from './screens/nestedScreens/Home';
 import LoginScreen from './screens/auth/LoginScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
+import PostsScreen from './screens/mainScreen/PostsScreen';
 
 import { Feather } from '@expo/vector-icons';
 import LogoutBtn from './components/LogoutBtn';
@@ -38,84 +39,103 @@ export const useRoute = isAuth => {
           name="Register"
           component={RegistrationScreen}
         />
+        {/* <AuthStack.Screen
+          options={{ headerShown: false }}
+          name="CommentsScreen"
+          component={CommentsScreen}
+        /> */}
       </AuthStack.Navigator>
     );
   }
   return (
-    <MainTab.Navigator
-      screenOptions={{
-        tabBarStyle: {
-          height: 83,
-          backgroundColor: '#fff',
-        },
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: '#212121',
-        tabBarInactiveTintColor: '#212121',
-        headerStyle: { backgroundColor: '#fff' },
-        headerTitleAlign: 'center',
-        // headerShadowVisible: false,
-      }}
-    >
-      <MainTab.Screen
-        options={{
-          headerRight: () => <LogoutBtn />,
-          tabBarIcon: ({ focused, color }) => (
-            <Feather name="grid" size={24} color={color} />
-          ),
+    <>
+      <MainTab.Navigator
+        screenOptions={{
+          tabBarStyle: {
+            height: 83,
+            backgroundColor: '#fff',
+          },
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: '#212121',
+          tabBarInactiveTintColor: '#212121',
+          headerStyle: { backgroundColor: '#fff' },
+          headerTitleAlign: 'center',
+          // headerShadowVisible: false,
         }}
-        name="Home"
-        component={Home}
-      />
-      <MainTab.Screen
-        options={{
-          headerTitle: 'Create Post',
-          tabBarIcon: ({ focused, color }) => (
-            <>
-              {!focused && (
-                <View
-                  style={{
-                    width: 70,
-                    height: 40,
-                    backgroundColor: '#FF6C00',
-                    borderRadius: 20,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Feather name="plus" size={24} color="#fff" />
-                </View>
-              )}
+      >
+        <MainTab.Screen
+          options={{
+            headerRight: () => <LogoutBtn />,
+            headerShown: false,
+            tabBarIcon: ({ focused, color }) => (
+              <Feather name="grid" size={24} color={color} />
+            ),
+          }}
+          name="Posts"
+          component={PostsScreen}
+        />
+        <MainTab.Screen
+          options={{
+            headerShown: false,
+            headerTitle: 'Create Post',
+            tabBarIcon: ({ focused, color }) => (
+              <>
+                {!focused && (
+                  <View
+                    style={{
+                      width: 70,
+                      height: 40,
+                      backgroundColor: '#FF6C00',
+                      borderRadius: 20,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Feather name="plus" size={24} color="#fff" />
+                  </View>
+                )}
 
-              {focused && (
-                <View
-                  style={{
-                    width: 70,
-                    height: 40,
-                    backgroundColor: '#F6F6F6',
-                    borderRadius: 20,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Feather name="trash-2" size={24} color="#BDBDBD" />
-                </View>
-              )}
-            </>
-          ),
-        }}
-        name="CreatePost"
-        component={CreatePostsScreen}
-      />
-      <MainTab.Screen
-        options={{
-          headerRight: () => <LogoutBtn />,
-          tabBarIcon: ({ focused, color }) => (
-            <Feather name="user" size={24} color={color} />
-          ),
-        }}
-        name="Profile"
-        component={ProfileScreen}
-      />
-    </MainTab.Navigator>
+                {focused && (
+                  <View
+                    style={{
+                      width: 70,
+                      height: 40,
+                      backgroundColor: '#F6F6F6',
+                      borderRadius: 20,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Feather name="trash-2" size={24} color="#BDBDBD" />
+                  </View>
+                )}
+              </>
+            ),
+          }}
+          name="CreatePost"
+          component={CreatePostsScreen}
+        />
+        <MainTab.Screen
+          options={{
+            headerShown: false,
+            headerRight: () => <LogoutBtn />,
+            tabBarIcon: ({ focused, color }) => (
+              <Feather name="user" size={24} color={color} />
+            ),
+          }}
+          name="Profile"
+          component={ProfileScreen}
+        />
+        {/* <MainTab.Screen
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <Feather name="user" size={24} color={color} />
+            ),
+          }}
+          name="MapScreen"
+          component={MapScreen}
+        /> */}
+      </MainTab.Navigator>
+    </>
   );
 };
